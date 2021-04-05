@@ -111,6 +111,9 @@ def main(_argv):
         image_data = image_data[np.newaxis, ...].astype(np.float32)
         start_time = time.time()
 
+        cv2.rectangle(frame, (0,0), (800, 100), (0, 0, 0), -1)
+        cv2.rectangle(frame, (0,0), (800, 100), (0, 0, 255), 1)
+
         # run detections on tflite if flag is set
         if FLAGS.framework == 'tflite':
             interpreter.set_tensor(input_details[0]['index'], image_data)
@@ -225,13 +228,13 @@ def main(_argv):
             if FLAGS.info:
                 print("Tracker ID: {}, Class: {},  BBox Coords (xmin, ymin, xmax, ymax): {}".format(str(track.track_id), class_name, (int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3]))))
 
-
         if FLAGS.traffic:
           traffic_unique_car_count = 0
           for value in traffic_dict_counter.values():
             if value >= 10:
               traffic_unique_car_count += 1
-          cv2.putText(frame, "Unique Car Traffic: {}".format(traffic_unique_car_count), (5, 125), cv2.FONT_HERSHEY_COMPLEX_SMALL, 2, (255, 0, 0), 2)
+          
+          cv2.putText(frame, "Unique Car Traffic: {}".format(traffic_unique_car_count), (5, 90), cv2.FONT_HERSHEY_COMPLEX_SMALL, 2, (255, 0, 0), 2)
 
         # calculate frames per second of running detections
         fps = 1.0 / (time.time() - start_time)
