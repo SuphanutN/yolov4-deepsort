@@ -37,6 +37,7 @@ flags.DEFINE_float('score', 0.50, 'score threshold')
 flags.DEFINE_boolean('dont_show', False, 'dont show video output')
 flags.DEFINE_boolean('info', False, 'show detailed info of tracked objects')
 flags.DEFINE_boolean('count', False, 'count objects being tracked on screen')
+flags.DEFINE_boolean('traffic', False, 'count unique car')
 
 def main(_argv):
     # Definition of the parameters
@@ -89,6 +90,8 @@ def main(_argv):
         fps = int(vid.get(cv2.CAP_PROP_FPS))
         codec = cv2.VideoWriter_fourcc(*FLAGS.output_format)
         out = cv2.VideoWriter(FLAGS.output, codec, fps, (width, height))
+
+    traffic_dict_counter = {}
 
     frame_num = 0
     # while video is running
@@ -157,10 +160,10 @@ def main(_argv):
         class_names = utils.read_class_names(cfg.YOLO.CLASSES)
 
         # by default allow all classes in .names file
-        allowed_classes = list(class_names.values())
+        #allowed_classes = list(class_names.values())
         
         # custom allowed classes (uncomment line below to customize tracker for only people)
-        #allowed_classes = ['person']
+        allowed_classes = ['car']
 
         # loop through objects and use class index to get class name, allow only classes in allowed_classes list
         names = []
@@ -206,6 +209,10 @@ def main(_argv):
                 continue 
             bbox = track.to_tlbr()
             class_name = track.get_class()
+            try: 
+              traffic_dict_counter[track.track_id] += 1
+            except:
+              traffic_dict_counter[track.track_id] = 1
             
         # draw bbox on screen
             color = colors[int(track.track_id) % len(colors)]
@@ -217,6 +224,14 @@ def main(_argv):
         # if enable info flag then print details about each track
             if FLAGS.info:
                 print("Tracker ID: {}, Class: {},  BBox Coords (xmin, ymin, xmax, ymax): {}".format(str(track.track_id), class_name, (int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3]))))
+
+
+        if FLAGS.traffic:
+          traffic_unique_car_count = 0
+          for value in traffic_dict_counter.values():
+            if value >= 10:
+              traffic_unique_car_count += 1
+          cv2.putText(frame, "Unique Car Traffic: {}".format(traffic_unique_car_count), (5, 125), cv2.FONT_HERSHEY_COMPLEX_SMALL, 2, (255, 0, 0), 2)
 
         # calculate frames per second of running detections
         fps = 1.0 / (time.time() - start_time)
