@@ -32,8 +32,8 @@ flags.DEFINE_string('model', 'yolov4', 'yolov3 or yolov4')
 flags.DEFINE_string('video', './data/video/test.mp4', 'path to input video or set to 0 for webcam')
 flags.DEFINE_string('output', None, 'path to output video')
 flags.DEFINE_string('output_format', 'XVID', 'codec used in VideoWriter when saving video to file')
-flags.DEFINE_float('iou', 0.45, 'iou threshold')
-flags.DEFINE_float('score', 0.50, 'score threshold')
+flags.DEFINE_float('iou', 0.5, 'iou threshold')
+flags.DEFINE_float('score', 0.65, 'score threshold')
 flags.DEFINE_boolean('dont_show', False, 'dont show video output')
 flags.DEFINE_boolean('info', False, 'show detailed info of tracked objects')
 flags.DEFINE_boolean('count', False, 'count objects being tracked on screen')
@@ -41,7 +41,7 @@ flags.DEFINE_boolean('traffic', False, 'count unique car')
 
 def main(_argv):
     # Definition of the parameters
-    max_cosine_distance = 0.4
+    max_cosine_distance = 0.5
     nn_budget = None
     nms_max_overlap = 1.0
     
